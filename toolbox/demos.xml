@@ -13,11 +13,5 @@
          <source>Example</source>
          <file>doc/html/Example.html</file>
        </demoitem>
-       <demoitem>
-         <label>Demo</label>
-         <type>other</type>
-         <source>Demo</source>
-         <file>doc/html/Demo.html</file>
-       </demoitem>
    </demosection>
 </demos>

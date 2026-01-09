@@ -1,22 +1,24 @@
-clear
-close all
+% This example works best with the Default level of the sample Unreal Engine project of SonoTraceUE
 
-sendInputSettings = false;
-sendAndReceiveTestDataMessage = false;
-testTransforms = false;
+close all
+clear all
+
+sendInputSettings = false; % This is not supported yet 
+sendAndReceiveTestDataMessage = true;
+testTransforms = true;
 interfaceIP = 'localhost';
 interfacePort = 9099;
 STUEInterface = sonotraceue.Interface(interfaceIP, interfacePort, sendInputSettings);
 
 plotEnable = true;
 plotSensor = true;
-plotDirectPath = true;
+plotDirectPath = false;
 plotReflectedPoints = true;
 plotDbCutOff = 60;
 plotLimitAroundSensor = false;
 
-plotSpecularSeperate = true;
-plotDiffractionSeperate = true;
+plotSpecularSeperate = false;
+plotDiffractionSeperate = false;
 plotDirectPathSeperate = false;
 
 calculateIR = true;
@@ -36,6 +38,7 @@ settings = STUEInterface.receiveSettings();
 pause(1)
 
 if testTransforms
+    disp("Sending new sensor relative transform...")
     translationMeters = [1; 0.5; 0.2];
     yawDegrees = 45; 
     rotationMatrix = rotz(yawDegrees);  
@@ -48,6 +51,7 @@ if testTransforms
 end
 
 if sendAndReceiveTestDataMessage
+    disp("Sending message...")
     type = 3;
     order = [2, 2, 0, 0, 1, 1, 2, 1, 0]; % Float, Float, String, String, Int, Int, Float, Int, String
     strings = {'my test string', 'mY SeCoNd TeSt StRiNg', 'Extra String'};
@@ -69,7 +73,7 @@ if sendAndReceiveTestDataMessage
     else
         warning("Unknown data type")
     end   
-    
+    disp("...Received message back!")
     pause(1)
 end
 
@@ -77,6 +81,7 @@ receivingMeasurements = true;
 while receivingMeasurements
 
     pause(1)
+    disp("Triggering new measurement...")
     triggered = STUEInterface.triggerMeasurement();
 
     if triggered
@@ -84,6 +89,8 @@ while receivingMeasurements
     
         if type == 1
             measurement = data;
+
+            disp("Received measurement #" + num2str(measurement.index) + ". Processing data and updating enabled plots...");
 
             if plotEnable
                 measurement.updatePlot(plotSensor, plotReflectedPoints, plotDirectPath, false, false, plotDbCutOff, plotLimitAroundSensor)
@@ -130,8 +137,8 @@ while receivingMeasurements
                     measurement.updatePlot(false, false, false, false, plotFinalSignals, plotDbCutOff, plotLimitAroundSensor)
                 end
             end
-
-            pause(3)
+            disp("Frame completed. Press a key to continue...");
+            pause
         elseif type == 0 || type == -1 || type == -2
             receivingMeasurements = false;
         elseif type == 2
