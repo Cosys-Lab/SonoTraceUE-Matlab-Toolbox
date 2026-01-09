@@ -9,7 +9,7 @@ Matlab Toolbox servering as an interface client to interact with the Unreal Engi
 
 ## Installation
 
-Find the latest [release on Github](https://github.com/Cosys-Lab/SonoTraceUE-Matlab-Toolbox/releases) or the MathWorks File Exchange for the toolbox. You can also clone or download this repository and use it from source.
+Find the latest [release on Github](https://github.com/Cosys-Lab/SonoTraceUE-Matlab-Toolbox/releases) or the [MathWorks File Exchange](https://www.mathworks.com/matlabcentral/fileexchange/183020-sonotraceue-matlab-toolbox) for the toolbox. You can also clone or download this repository and use it from source.
 
 <a id="TMP_3c79"></a>
 
