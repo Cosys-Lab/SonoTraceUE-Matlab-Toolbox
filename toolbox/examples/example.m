@@ -73,7 +73,20 @@ if sendAndReceiveTestDataMessage
     else
         warning("Unknown data type")
     end   
-    disp("...Received message back!")
+    disp("...Received message back! Parsing image...")
+    
+    numHorizontalPixels = dataMessage.integers(1);
+    numVerticalPixels = dataMessage.integers(2);
+    numPixels = numHorizontalPixels * numVerticalPixels;    
+    rgbValues = dataMessage.integers(3:end);
+    if length(rgbValues) ~= numPixels * 3
+        error('The number of RGB values does not match the specified dimensions.');
+    end
+    imageMatrix = reshape(rgbValues, [3, numHorizontalPixels, numVerticalPixels]);
+    imageMatrix = permute(imageMatrix, [3, 2, 1]);
+    imageMatrix = imageMatrix / 255;
+    figure;imshow(imageMatrix)
+    title("Scene Capture data")
     pause(1)
 end
 
