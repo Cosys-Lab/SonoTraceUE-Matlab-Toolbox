@@ -16,7 +16,10 @@ function pointStruct = pointStructGenerator(dataReflectedPoint, numberOfEmitters
     pointStruct.isSpecular = true;
     pointStruct.isDiffraction = false;
     pointStruct.isDirectPath = false;
+    pointStruct.rayIndex = 0;
+    pointStruct.bounceIndex = 0;
     pointStruct.label = "UNKNOWN";
+    pointStruct.emitterDirectivities = [];
 
     if nargin > 1 
         if ~isempty(dataReflectedPoint)
@@ -74,8 +77,26 @@ function pointStruct = pointStructGenerator(dataReflectedPoint, numberOfEmitters
             % isDirectPath (bool - 4 bytes)
             pointStruct.isDirectPath = logical(typecast(swapbytes(dataReflectedPoint(totalDistancesFromEmittersEndByte + 29:totalDistancesFromEmittersEndByte + 32)), 'int32'));
         
+            % rayIndex (int32 - 4 bytes)
+            pointStruct.rayIndex = typecast(swapbytes(typecast(dataReflectedPoint(totalDistancesFromEmittersEndByte + 33:totalDistancesFromEmittersEndByte + 36), 'uint8')), 'int32');
+
+            % bounceIndex (int32 - 4 bytes)
+            pointStruct.bounceIndex = typecast(swapbytes(typecast(dataReflectedPoint(totalDistancesFromEmittersEndByte + 37:totalDistancesFromEmittersEndByte + 40), 'uint8')), 'int32');
+        
+            % emitterDirectivities Count (int32)
+            emitterDirectivityCount = typecast(swapbytes(typecast(dataReflectedPoint(totalDistancesFromEmittersEndByte + 41:totalDistancesFromEmittersEndByte + 44), 'uint8')), 'int32');            
+        
+            % emitterDirectivities (TArray<float> - numberOfEmitters floats)                
+            if emitterDirectivityCount > 0
+                emitterDirectivitiesStartByte = totalDistancesFromEmittersEndByte + 44 + 1;
+                emitterDirectivitiesEndByte = emitterDirectivitiesStartByte + emitterDirectivityCount * 4 - 1;
+                pointStruct.emitterDirectivities = typecast(swapbytes(typecast(dataReflectedPoint(emitterDirectivitiesStartByte:emitterDirectivitiesEndByte), 'uint8')), 'single')';
+            else
+                emitterDirectivitiesEndByte = 44;
+            end
+
             % Strengths (TArray<TArray<TArray<float>>> - numberOfEmitters x numberOfReceivers x numberOfFrequencies floats)
-            strengthsStartByte = totalDistancesFromEmittersEndByte + 33;
+            strengthsStartByte = emitterDirectivitiesEndByte + 1;
             strengthsEndByte = strengthsStartByte + numberOfEmitters * numberOfReceivers * numberOfFrequencies * 4 -1;
             pointStruct.strengths = permute(reshape(typecast(swapbytes(typecast(dataReflectedPoint(strengthsStartByte:strengthsEndByte), 'uint8')), 'single'), numberOfFrequencies, numberOfReceivers, numberOfEmitters), [3, 2, 1]);
             

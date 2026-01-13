@@ -50,8 +50,10 @@ classdef Settings
         elevationAngles = [];
         loadedEmitterPositions = [];
         finalEmitterPositions = [];
+        finalEmitterDirectivities = [];
         loadedReceiverPositions = [];
         finalReceiverPositions = [];
+        finalReceiverDirectivities = [];
         objectSettings = [];
         frequencies = [];
         emitterSignals = {};
@@ -200,6 +202,11 @@ classdef Settings
                     obj.finalEmitterPositions(i, :) = typecast(swapbytes(buffer(pointer:pointer+23)), 'double') .* [0.01 -0.01 0.01];
                     pointer = pointer + 24;
                 end
+                obj.finalEmitterDirectivities = zeros(1, numberOfEmitters, 'single');
+                for i = 1:numberOfEmitters
+                    obj.finalEmitterDirectivities(i) = typecast(swapbytes(buffer(pointer:pointer+3)), 'single');
+                    pointer = pointer + 4;
+                end
                 numberOfReceivers = typecast(swapbytes(buffer(pointer:pointer+3)), 'int32');
                 pointer = pointer + 4;
                 obj.loadedReceiverPositions = zeros(numberOfReceivers, 3, 'single');
@@ -213,6 +220,11 @@ classdef Settings
                 for i = 1:finalnumberOfReceivers
                     obj.finalReceiverPositions(i, :) = typecast(swapbytes(buffer(pointer:pointer+23)), 'double') .* [0.01 -0.01 0.01];
                     pointer = pointer + 24;
+                end
+                obj.finalReceiverDirectivities = zeros(1, finalnumberOfReceivers, 'single');
+                for i = 1:finalnumberOfReceivers
+                    obj.finalReceiverDirectivities(i) = typecast(swapbytes(buffer(pointer:pointer+3)), 'single');
+                    pointer = pointer + 4;
                 end
     
                 % Object Settings

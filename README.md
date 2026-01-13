@@ -371,13 +371,48 @@ Contains all data from a single acoustic measurement, including ray\-traced poin
 -  `emitterTForms`: 4×4×N array of emitter transforms 
 -  `receiverTForms`: 4×4×M array of receiver transforms 
 -  `sensorTForm`: 4×4 sensor world transform 
--  `reflectedPoints`: Array of ray\-traced point structures 
+-  `reflectedPoints`: Struct Array of ray\-traced point structures, explained below 
 -  `directPathLOS`: Line\-of\-sight results for direct path 
--  `impulseResponses`: Generated impulse responses (N\_emitters × N\_receivers × samples) 
--  `receiverSignals`: Generated receiver signals 
+-  `impulseResponses`: Generated impulse responses (emitters × receivers × samples) 
+-  `receiverSignals`: Generated receiver signals (receivers × samples) 
 -  `specularSubOutput`: Specular reflection component results 
--  `diffractionSubOutput`: Diffraction component results 
+-  `dsiffractionSubOutput`: Diffraction component results 
 -  `directPathSubOutput`: Direct path component results 
+<a id="TMP_1aa8"></a>
+
+#### `reflectedPoints` Structure 
+
+The  `reflectedPoints` struct array of the `Measurement` class holds the important data on all the reflected simulation points. This table explains all the fields of this array.
+
+<a id="TMP_0676"></a>
+
+## Field Summary Table
+| **Field**  | **Type**  | **Description**   |
+| :-- | :-- | :-- |
+| `location`  | `[3×1 double]`  | 3D position of point (converted from cm to meters, Y\-axis inverted)   |
+| `reflectionDirection`  | `[3×1 double]`  | Direction of acoustic reflection (Y\-axis inverted)   |
+| `label`  | `string`  | Object label (from component name)   |
+| `index`  | `int32`  | Sequential point index   |
+| `summedStrength`  | `float`  | Total strength across all frequencies   |
+| `strengths`  | `[Em × Rx × Freq float]`  | Strength values per emitter, receiver, and frequency   |
+| `totalDistance`  | `float`  | Total acoustic path length (converted from cm to meters)   |
+| `totalDistancesFromEmitters`  | `[Em × 1 float]`  | Path length per emitter (converted from cm to meters)   |
+| `totalDistanceToReceivers`  | `[Em × Rx float]`  | Path length from this point to each receiver, per emitter (converted from cm to meters)   |
+| `distanceToSensor`  | `float`  | Direct distance to sensor (converted from cm to meters)   |
+| `objectTypeIndex`  | `int32`  | Index into ObjectSettings array   |
+| `isHit`  | `logical`  | `true` if ray hit geometry   |
+| `isLastHit`  | `logical`  | `true` if final bounce in ray path   |
+| `curvatureMagnitude`  | `float`  | Surface curvature at hit point   |
+| `isSpecular`  | `logical`  | `true` if from specular component   |
+| `isDiffraction`  | `logical`  | `true` if from diffraction component   |
+| `isDirectPath`  | `logical`  | `true` if from direct path component   |
+| `rayIndex`  | `int32`  | The original index of the raytracing resulting in this point   |
+| `bounceIndex`  | `int32`  | The bounce index of the multi\-path reflections of the rays   |
+| `emitterDirectivities`  | `[Em × 1 float]`  | The calculated source directivity for each emitter to the first reflection   |
+
+
+Em = Number of Emitters, Rx = Number of Receivers, Freq = Number of Frequencies
+
 <a id="TMP_4768"></a>
 
 ### `Measurement` **Methods:**
