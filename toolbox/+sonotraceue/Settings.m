@@ -5,6 +5,8 @@ classdef Settings
         emitterPositionsOffset = [0, 0, 0];
         receiverPositionsOffset = [0, 0, 0];
         enableStaticReceivers = false;
+        enableEmitterDirectivity = false;
+        enableReceiverDirectivity = false;
         enableUseWorldCoordinatesReceivers = true;
         enableEmitterPatternSimulation = false;
         emitterPatternRadius = 0.0125;
@@ -86,6 +88,12 @@ classdef Settings
                 pointer = pointer + 24;
                 obj.receiverPositionsOffset = typecast(swapbytes(buffer(pointer:pointer+23)), 'double') .* [0.01 -0.01 0.01];
                 pointer = pointer + 24;
+
+                % Directivity settings
+                obj.enableEmitterDirectivity = logical(buffer(pointer));
+                pointer = pointer + 1;
+                obj.enableReceiverDirectivity = logical(buffer(pointer));
+                pointer = pointer + 1;
     
                 % Receiver settings
                 obj.enableStaticReceivers = logical(buffer(pointer));
@@ -202,10 +210,12 @@ classdef Settings
                     obj.finalEmitterPositions(i, :) = typecast(swapbytes(buffer(pointer:pointer+23)), 'double') .* [0.01 -0.01 0.01];
                     pointer = pointer + 24;
                 end
-                obj.finalEmitterDirectivities = zeros(1, numberOfEmitters, 'single');
-                for i = 1:numberOfEmitters
-                    obj.finalEmitterDirectivities(i) = typecast(swapbytes(buffer(pointer:pointer+3)), 'single');
-                    pointer = pointer + 4;
+                if obj.enableEmitterDirectivity
+                    obj.finalEmitterDirectivities = zeros(1, numberOfEmitters, 'single');
+                    for i = 1:numberOfEmitters
+                        obj.finalEmitterDirectivities(i) = typecast(swapbytes(buffer(pointer:pointer+3)), 'single');
+                        pointer = pointer + 4;
+                    end
                 end
                 numberOfReceivers = typecast(swapbytes(buffer(pointer:pointer+3)), 'int32');
                 pointer = pointer + 4;
@@ -221,12 +231,14 @@ classdef Settings
                     obj.finalReceiverPositions(i, :) = typecast(swapbytes(buffer(pointer:pointer+23)), 'double') .* [0.01 -0.01 0.01];
                     pointer = pointer + 24;
                 end
-                obj.finalReceiverDirectivities = zeros(1, finalnumberOfReceivers, 'single');
-                for i = 1:finalnumberOfReceivers
-                    obj.finalReceiverDirectivities(i) = typecast(swapbytes(buffer(pointer:pointer+3)), 'single');
-                    pointer = pointer + 4;
+                if obj.enableReceiverDirectivity
+                    obj.finalReceiverDirectivities = zeros(1, finalnumberOfReceivers, 'single');
+                    for i = 1:finalnumberOfReceivers
+                        obj.finalReceiverDirectivities(i) = typecast(swapbytes(buffer(pointer:pointer+3)), 'single');
+                        pointer = pointer + 4;
+                    end
                 end
-    
+
                 % Object Settings
                 objectCount = typecast(swapbytes(buffer(pointer:pointer+3)), 'int32');
                 pointer = pointer + 4;
