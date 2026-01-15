@@ -95,7 +95,7 @@ The main interface class that establishes and manages the TCP connection to the 
 **Constructor:**
 
 ```matlab
-interface = sonotraceue.Interface(serverIP, serverPort, sendInputSettings, logLevel) 
+interface = sonotraceue.Interface(serverIP, serverPort, logLevel) 
 ```
 
 **Parameters:**
