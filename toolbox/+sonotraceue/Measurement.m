@@ -206,38 +206,129 @@ classdef Measurement
             isSet = ~isempty(obj.directPathSubOutput);
         end
 
-        function obj = synthetizeIRFromPoints(obj, settings, NumberOfSamplesIRFilter, IRFilterGaussAlpha, NumberOfIRSamples, ApproximateIRCutDB, EnableApproximateIR, EnablepatternSum)
+        function obj = synthetizeIRFromPoints(obj, settings)
+            if ~settings.settingsSetManually
+                warning("Using default settings for IR synthesis and signal generation. Make sure to provide these with settings.prepareIRandSignalGeneration(...) first!");
+            end        
+            
+            if settings.enableEmitterPatternSimulation
+                if settings.useBaseKernels && ~isempty(settings.baseKernels)
+                    totalNumberOfMics = size(settings.finalReceiverPositions, 1);
+                    virtualReceiversPerRealReceiver = totalNumberOfMics / settings.numberOfReceivers;
+                    impulseResponsesAll = sonotraceue.synthetizeIRFromPointsWithBaseKernels(obj.reflectedPoints, settings.sampleRate, settings.numberOfSamplesIRFilter, settings.frequencies, ...
+                                                                                            settings.numberOfIRSamples, settings.numberOfEmitters, totalNumberOfMics, ...
+                                                                                            settings.approximateIRCutDB, settings.enableApproximateIR, settings.speedOfSound, settings.baseKernels);
+                    if settings.enablePatternSum
+                        impulseResponsesReshaped = reshape(impulseResponsesAll, settings.numberOfEmitters, virtualReceiversPerRealReceiver, settings.numberOfReceivers, size(impulseResponsesAll, 3));
+                        obj.impulseResponses = reshape(sum(impulseResponsesReshaped, 2), settings.numberOfEmitters, settings.numberOfReceivers, size(impulseResponsesAll, 3))  ./ double(virtualReceiversPerRealReceiver);
+                    else 
+                        obj.impulseResponses = impulseResponsesAll;
+                    end
+                else
+                    if settings.useBaseKernels && isempty(settings.baseKernels)
+                        warning("settings.useBaseKernels is enabled but no base kernels are found so running without! Make sure to generate them with settings.prepareIRandSignalGeneration(...) first!");
+                    end
+
+                    totalNumberOfMics = size(settings.finalReceiverPositions, 1);
+                    virtualReceiversPerRealReceiver = totalNumberOfMics / settings.numberOfReceivers;
+                    impulseResponsesAll = sonotraceue.synthetizeIRFromPoints(obj.reflectedPoints, settings.sampleRate, settings.numberOfSamplesIRFilter, settings.frequencies, ...
+                                                                             settings.iRFilterGaussAlpha, settings.numberOfIRSamples, settings.numberOfEmitters, totalNumberOfMics, ...
+                                                                             settings.approximateIRCutDB, settings.enableApproximateIR, settings.speedOfSound);
+                    if settings.enablePatternSum
+                        impulseResponsesReshaped = reshape(impulseResponsesAll, settings.numberOfEmitters, virtualReceiversPerRealReceiver, settings.numberOfReceivers, size(impulseResponsesAll, 3));
+                        obj.impulseResponses = reshape(sum(impulseResponsesReshaped, 2), settings.numberOfEmitters, settings.numberOfReceivers, size(impulseResponsesAll, 3))  ./ double(virtualReceiversPerRealReceiver);
+                    else 
+                        obj.impulseResponses = impulseResponsesAll;
+                    end
+                end                
+            else
+                if settings.useBaseKernels && ~isempty(settings.baseKernels)
+                    obj.impulseResponses = sonotraceue.synthetizeIRFromPointsWithBaseKernels(obj.reflectedPoints, settings.sampleRate, settings.numberOfSamplesIRFilter, settings.frequencies, ...
+                                                                                             settings.numberOfIRSamples, settings.numberOfEmitters, settings.numberOfReceivers, ...
+                                                                                             settings.approximateIRCutDB, settings.enableApproximateIR, settings.speedOfSound, settings.baseKernels);
+                else
+                    if settings.useBaseKernels && isempty(settings.baseKernels)
+                        warning("settings.useBaseKernels is enabled but no base kernels are found so running without! Make sure to generate them with settings.prepareIRandSignalGeneration(...) first!");
+                    end
+
+                    obj.impulseResponses = sonotraceue.synthetizeIRFromPoints(obj.reflectedPoints, settings.sampleRate, settings.numberOfSamplesIRFilter, settings.frequencies, ...
+                                                                              settings.iRFilterGaussAlpha, settings.numberOfIRSamples, settings.numberOfEmitters, settings.numberOfReceivers, ...
+                                                                              settings.approximateIRCutDB, settings.enableApproximateIR, settings.speedOfSound);
+                end
+            end
+        end
+
+        function obj = synthetizeIRFromPointsOverride(obj, settings, numberOfSamplesIRFilter, iRFilterGaussAlpha, numberOfIRSamples, approximateIRCutDB, enableApproximateIR, enablePatternSum, useBaseKernels)
             if settings.enableEmitterPatternSimulation
                 totalNumberOfMics = size(settings.finalReceiverPositions, 1);
                 virtualReceiversPerRealReceiver = totalNumberOfMics / settings.numberOfReceivers;
-                impulseResponsesAll = sonotraceue.synthetizeIRFromPoints(obj.reflectedPoints, settings.sampleRate, NumberOfSamplesIRFilter, settings.frequencies, ...
-                                                                         IRFilterGaussAlpha, NumberOfIRSamples, settings.numberOfEmitters, totalNumberOfMics, ...
-                                                                         ApproximateIRCutDB, EnableApproximateIR, settings.speedOfSound);
-                if EnablepatternSum
+
+                if useBaseKernels
+                    baseKernels = sonotraceue.generateIRBaseKernels(obj, iRFilterGaussAlpha, numberOfSamplesIRFilter);
+                    impulseResponsesAll = sonotraceue.synthetizeIRFromPointsWithBaseKernels(obj.reflectedPoints, settings.sampleRate, numberOfSamplesIRFilter, settings.frequencies, ...
+                                                                                            numberOfIRSamples, settings.numberOfEmitters, totalNumberOfMics, ...
+                                                                                            approximateIRCutDB, enableApproximateIR, settings.speedOfSound, baseKernels);
+                else
+                    impulseResponsesAll = sonotraceue.synthetizeIRFromPoints(obj.reflectedPoints, settings.sampleRate, numberOfSamplesIRFilter, settings.frequencies, ...
+                                                                             iRFilterGaussAlpha, numberOfIRSamples, settings.numberOfEmitters, totalNumberOfMics, ...
+                                                                             approximateIRCutDB, enableApproximateIR, settings.speedOfSound);
+                end
+                if enablePatternSum
                     impulseResponsesReshaped = reshape(impulseResponsesAll, settings.numberOfEmitters, virtualReceiversPerRealReceiver, settings.numberOfReceivers, size(impulseResponsesAll, 3));
                     obj.impulseResponses = reshape(sum(impulseResponsesReshaped, 2), settings.numberOfEmitters, settings.numberOfReceivers, size(impulseResponsesAll, 3))  ./ double(virtualReceiversPerRealReceiver);
                 else 
                     obj.impulseResponses = impulseResponsesAll;
                 end
             else
-                obj.impulseResponses = sonotraceue.synthetizeIRFromPoints(obj.reflectedPoints, settings.sampleRate, NumberOfSamplesIRFilter, settings.frequencies, ...
-                                                                          IRFilterGaussAlpha, NumberOfIRSamples, settings.numberOfEmitters, settings.numberOfReceivers, ...
-                                                                          ApproximateIRCutDB, EnableApproximateIR, settings.speedOfSound);
+                if useBaseKernels
+                    baseKernels = sonotraceue.generateIRBaseKernels(obj, iRFilterGaussAlpha, numberOfSamplesIRFilter);
+                    obj.impulseResponses = sonotraceue.synthetizeIRFromPointsWithBaseKernels(obj.reflectedPoints, settings.sampleRate, numberOfSamplesIRFilter, settings.frequencies, ...
+                                                                                            numberOfIRSamples, settings.numberOfEmitters, settings.numberOfReceivers, ...
+                                                                                            approximateIRCutDB, enableApproximateIR, settings.speedOfSound, baseKernels);
+                else
+                    obj.impulseResponses = sonotraceue.synthetizeIRFromPoints(obj.reflectedPoints, settings.sampleRate, numberOfSamplesIRFilter, settings.frequencies, ...
+                                                                              iRFilterGaussAlpha, numberOfIRSamples, settings.numberOfEmitters, settings.numberOfReceivers, ...
+                                                                              approximateIRCutDB, enableApproximateIR, settings.speedOfSound);
+                end
             end
         end
 
-        function obj = synthetizeIRFromSubResultsPoints(obj, settings, IRFilterGaussAlpha, NumberOfSamplesIRFilter, NumberOfIRSamples, ApproximateIRCutDB, EnableApproximateIR, EnablepatternSum, Merge)
+        function obj = synthetizeIRFromSubResultsPoints(obj, settings, Merge)
+
+            if ~settings.settingsSetManually
+                warning("Using default settings for IR synthesis and signal generation. Make sure to provide these with settings.prepareIRandSignalGeneration(...) first!");
+            end        
+
             if obj.isSpecularSubOutputSet()
-                obj.specularSubOutput = obj.specularSubOutput.synthetizeIRFromPoints(settings, NumberOfSamplesIRFilter, IRFilterGaussAlpha, NumberOfIRSamples, ApproximateIRCutDB, EnableApproximateIR, EnablepatternSum);
+                obj.specularSubOutput = obj.specularSubOutput.synthetizeIRFromPoints(settings);
             end
             if obj.isDiffractionSubOutputSet()
-                obj.diffractionSubOutput = obj.diffractionSubOutput.synthetizeIRFromPoints(settings, NumberOfSamplesIRFilter, IRFilterGaussAlpha, NumberOfIRSamples, ApproximateIRCutDB, EnableApproximateIR, EnablepatternSum);
+                obj.diffractionSubOutput = obj.diffractionSubOutput.synthetizeIRFromPoints(settings);
             end
             if obj.isDirectPathSubOutputSet()
-                obj.directPathSubOutput = obj.directPathSubOutput.synthetizeIRFromPoints(settings, NumberOfSamplesIRFilter, IRFilterGaussAlpha, NumberOfIRSamples, ApproximateIRCutDB, EnableApproximateIR, EnablepatternSum);
+                obj.directPathSubOutput = obj.directPathSubOutput.synthetizeIRFromPoints(settings);
             end
             if Merge
-                obj.mergeIRFromSubResults()
+                obj = obj.mergeIRFromSubResults();
+            end
+        end
+
+        function obj = synthetizeIRFromSubResultsPointsOverride(obj, settings, iRFilterGaussAlpha, numberOfSamplesIRFilter, numberOfIRSamples, approximateIRCutDB, enableApproximateIR, enablePatternSum, useBaseKernels, Merge)
+            baseKernels = [];
+            if useBaseKernels
+                baseKernels = sonotraceue.generateIRBaseKernels(obj, iRFilterGaussAlpha, numberOfSamplesIRFilter);
+            end
+            if obj.isSpecularSubOutputSet()
+                obj.specularSubOutput = obj.specularSubOutput.synthetizeIRFromPointsOverride(settings, numberOfSamplesIRFilter, iRFilterGaussAlpha, numberOfIRSamples, approximateIRCutDB, enableApproximateIR, enablePatternSum, useBaseKernels, baseKernels);
+            end
+            if obj.isDiffractionSubOutputSet()
+                obj.diffractionSubOutput = obj.diffractionSubOutput.synthetizeIRFromPointsOverride(settings, numberOfSamplesIRFilter, iRFilterGaussAlpha, numberOfIRSamples, approximateIRCutDB, enableApproximateIR, enablePatternSum, useBaseKernels, baseKernels);
+            end
+            if obj.isDirectPathSubOutputSet()
+                obj.directPathSubOutput = obj.directPathSubOutput.synthetizeIRFromPointsOverride(settings, numberOfSamplesIRFilter, iRFilterGaussAlpha, numberOfIRSamples, approximateIRCutDB, enableApproximateIR, enablePatternSum, useBaseKernels, baseKernels);
+            end
+            if Merge
+                obj = obj.mergeIRFromSubResults();
             end
         end
 

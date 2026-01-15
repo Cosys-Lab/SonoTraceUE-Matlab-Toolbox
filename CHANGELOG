@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 ## [dev]
 - Added SceneCapture to DataMessage example.
 - Added new directivity related data.
+- Added simplified functions for IR generation with new function on settings called prepareIRandSignalGeneration(). 
+- Added optimized IR synthesis method with base kernel.
+- Added better documentation.
 
 ## [Released]
 

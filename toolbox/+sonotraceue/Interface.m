@@ -11,13 +11,11 @@ classdef Interface
     end
     
     methods
-        function obj = Interface(serverIP, serverPort, sendInputSettings, logLevel)
+        function obj = Interface(serverIP, serverPort, logLevel)
             if nargin > 0
                 obj.serverIP = serverIP;
                 obj.serverPort = serverPort;
-                obj.sendInputSettings = sendInputSettings;
-
-                if nargin > 3  
+                if nargin > 2
                     obj.log.default_level = logLevel;
                 end 
             end      

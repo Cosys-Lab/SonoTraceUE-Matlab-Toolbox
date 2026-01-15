@@ -1,38 +1,33 @@
 function impulseResponses = synthetizeIRFromPoints(reflectedPoints, sampleRate, ...
-                                                   NumberOfSamplesIRFilter, frequencies, ...
-                                                   IRFilterGaussAlpha, ...
-                                                   NumberOfIRSamples, ...
+                                                   numberOfSamplesIRFilter, frequencies, ...
+                                                   iRFilterGaussAlpha, ...
+                                                   numberOfIRSamples, ...
                                                    numberOfEmitters, ...
                                                    numberOfReceivers, ...
-                                                   ApproximateIRCutDB, ...
-                                                   EnableApproximateIR, ...
+                                                   approximateIRCutDB, ...
+                                                   enableApproximateIR, ...
                                                    speedOfSound)
 
-    freqVecIRFilter = (0 : NumberOfSamplesIRFilter - 1) * (single(sampleRate) / NumberOfSamplesIRFilter);
-    windowsGaussianFilter = gausswin(NumberOfSamplesIRFilter, IRFilterGaussAlpha);
-    IRFilterFreqDomPhase = exp(-1i * linspace(0, 0*pi, NumberOfSamplesIRFilter));           
-    impulseResponses = zeros(numberOfEmitters, numberOfReceivers, NumberOfIRSamples);
+    freqVecIRFilter = (0 : numberOfSamplesIRFilter - 1) * (single(sampleRate) / numberOfSamplesIRFilter);
+    windowsGaussianFilter = gausswin(numberOfSamplesIRFilter, iRFilterGaussAlpha);
+    IRFilterFreqDomPhase = exp(-1i * linspace(0, 0*pi, numberOfSamplesIRFilter));           
+    impulseResponses = zeros(numberOfEmitters, numberOfReceivers, numberOfIRSamples);
 
     pointCount = size(reflectedPoints, 1);
     if pointCount > 0
-        for emitterIndex = 1 : numberOfEmitters
-            distancesReflected = cat(3, reflectedPoints.totalDistanceToReceivers); 
-            if numberOfReceivers == 1
-                distancesReflected = squeeze(distancesReflected(emitterIndex, :, :)); 
-                reflectedStrengths = zeros(pointCount, size(frequencies, 2), numberOfReceivers);
-                for pointIndex = 1 : pointCount
-                    reflectedStrengths(pointIndex, :, :) = squeeze(reflectedPoints(pointIndex).strengths(emitterIndex, :, :)); 
-                end
+        distancesReflectedTotal = cat(3, reflectedPoints.totalDistanceToReceivers); 
+        strengthsTotal = cat(4, reflectedPoints.strengths);
+        for emitterIndex = 1 : numberOfEmitters     
+            reflectedStrengths = permute(strengthsTotal(emitterIndex, :, :, :), [4, 2, 3, 1]);
+            if numberOfReceivers > 1
+                distancesReflected = squeeze(distancesReflectedTotal(emitterIndex, :, :))'; 
+                reflectedStrengths = permute(reflectedStrengths, [1, 3, 2]);   
             else
-                distancesReflected = squeeze(distancesReflected(emitterIndex, :, :))'; 
-                reflectedStrengths = zeros(pointCount, size(frequencies, 2), numberOfReceivers);
-                for pointIndex = 1 : pointCount
-                    reflectedStrengths(pointIndex, :, :) = squeeze(reflectedPoints(pointIndex).strengths(emitterIndex, :, :))'; 
-                end
+               distancesReflected = squeeze(distancesReflectedTotal(emitterIndex, :, :)); 
             end
-            if EnableApproximateIR
-                energyReflectedNormed = sonotraceue.normLog(sum(sum(reflectedStrengths .^ 2, 2), 3), ApproximateIRCutDB);
-                idxsPointsApprox = find(energyReflectedNormed > (ApproximateIRCutDB + 1));
+            if enableApproximateIR
+                energyReflectedNormed = sonotraceue.normLog(sum(sum(reflectedStrengths .^ 2, 2), 3), approximateIRCutDB);
+                idxsPointsApprox = find(energyReflectedNormed > (approximateIRCutDB + 1));
                 numHitsApprox = size(idxsPointsApprox, 1);
                 for cntHitsApprox = 1 : numHitsApprox
                     curDistance = distancesReflected(idxsPointsApprox(cntHitsApprox), :);
@@ -56,9 +51,9 @@ function impulseResponses = synthetizeIRFromPoints(reflectedPoints, sampleRate, 
                         IRFilterImpresp = IRFilterImpresp .* windowsGaussianFilter;
                     end
                     for receiverIndex = 1 : numberOfReceivers
-                        curSplStart = max(0, curSample( receiverIndex) - NumberOfSamplesIRFilter / 2);
-                        curSplStop = min(curSplStart + NumberOfSamplesIRFilter - 1, NumberOfIRSamples);
-                        if curSplStart < NumberOfIRSamples
+                        curSplStart = max(0, curSample( receiverIndex) - numberOfSamplesIRFilter / 2);
+                        curSplStop = min(curSplStart + numberOfSamplesIRFilter - 1, numberOfIRSamples);
+                        if curSplStart < numberOfIRSamples
                             impulseResponses(emitterIndex, receiverIndex, curSplStart:curSplStop) = squeeze(impulseResponses(emitterIndex, receiverIndex, curSplStart:curSplStop))  + IRFilterImpresp(:, receiverIndex);
                         end
                    end        
@@ -87,9 +82,9 @@ function impulseResponses = synthetizeIRFromPoints(reflectedPoints, sampleRate, 
                         IRFilterImpresp = IRFilterImpresp .* windowsGaussianFilter;
                     end
                     for receiverIndex = 1 : numberOfReceivers
-                        curSplStart = max(1, curSample(receiverIndex) - NumberOfSamplesIRFilter / 2);
-                        curSplStop = min(curSplStart + NumberOfSamplesIRFilter - 1, NumberOfIRSamples);
-                        if curSplStart < NumberOfIRSamples
+                        curSplStart = max(1, curSample(receiverIndex) - numberOfSamplesIRFilter / 2);
+                        curSplStop = min(curSplStart + numberOfSamplesIRFilter - 1, numberOfIRSamples);
+                        if curSplStart < numberOfIRSamples
                             impulseResponses(emitterIndex, receiverIndex, curSplStart:curSplStop) = squeeze(impulseResponses(emitterIndex, receiverIndex, curSplStart:curSplStop)) + IRFilterImpresp(1:curSplStop-curSplStart + 1, receiverIndex);
                         end
                    end    

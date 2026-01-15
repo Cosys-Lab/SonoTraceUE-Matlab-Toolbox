@@ -63,6 +63,17 @@ classdef Settings
 
         numberOfEmitters = 0;
         numberOfReceivers = 0;
+
+        % IR and signal generation settings
+        baseKernels = [];
+        numberOfSamplesIRFilter = 512;
+        iRFilterGaussAlpha = 5;
+        numberOfIRSamples = 14000;
+        approximateIRCutDB = -90;
+        enableApproximateIR = false;
+        useBaseKernels = false;
+        enablePatternSum = true;
+        settingsSetManually = false;
     end
     
     methods
@@ -279,7 +290,23 @@ classdef Settings
                 obj.numberOfEmitters = numberOfEmitters;
                 obj.numberOfReceivers = numberOfReceivers;
             end
-        end        
+        end   
+
+        function obj = prepareIRandSignalGeneration(obj, numberOfSamplesIRFilter, enablePatternSum,...
+                                                    iRFilterGaussAlpha, numberOfIRSamples, ...
+                                                    approximateIRCutDB, enableApproximateIR, useBaseKernels)
+            obj.numberOfSamplesIRFilter = numberOfSamplesIRFilter;
+            obj.iRFilterGaussAlpha = iRFilterGaussAlpha;
+            obj.numberOfIRSamples = numberOfIRSamples;
+            obj.approximateIRCutDB = approximateIRCutDB;
+            obj.enableApproximateIR = enableApproximateIR;
+            obj.useBaseKernels = useBaseKernels;
+            obj.enablePatternSum = enablePatternSum;
+            if useBaseKernels
+                obj.baseKernels = sonotraceue.generateIRBaseKernels(obj, iRFilterGaussAlpha, numberOfSamplesIRFilter);
+            end
+            obj.settingsSetManually = true;
+        end
     end
 end
 

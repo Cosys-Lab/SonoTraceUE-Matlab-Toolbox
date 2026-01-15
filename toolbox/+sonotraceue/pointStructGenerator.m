@@ -92,7 +92,7 @@ function pointStruct = pointStructGenerator(dataReflectedPoint, numberOfEmitters
                 emitterDirectivitiesEndByte = emitterDirectivitiesStartByte + emitterDirectivityCount * 4 - 1;
                 pointStruct.emitterDirectivities = typecast(swapbytes(typecast(dataReflectedPoint(emitterDirectivitiesStartByte:emitterDirectivitiesEndByte), 'uint8')), 'single')';
             else
-                emitterDirectivitiesEndByte = 44;
+                emitterDirectivitiesEndByte = totalDistancesFromEmittersEndByte + 44;
             end
 
             % Strengths (TArray<TArray<TArray<float>>> - numberOfEmitters x numberOfReceivers x numberOfFrequencies floats)
