@@ -1,8 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-
 ## [Released]
+
+## [2.0.0] - 2026-01-16
+- Compatible with SonoTraceUE v2.0.0.
+- Added SceneCapture to DataMessage example.
+- Added new directivity related data.
+- Added simplified functions for IR generation with new function on settings called prepareIRandSignalGeneration(). 
+- Added optimized IR synthesis method with base kernel.
+- Added better documentation.
 
 ## [1.0.0] - 2026-01-09
 - First release. 
