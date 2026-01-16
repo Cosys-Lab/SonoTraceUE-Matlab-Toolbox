@@ -139,7 +139,6 @@ while receivingMeasurements
             end
 
             if calculateIR
-                tic
                 if calculateIRSeperate
                     measurement = measurement.synthetizeIRFromSubResultsPoints(settings, true);
                 else
@@ -148,7 +147,6 @@ while receivingMeasurements
                 if plotEnable
                     measurement.updatePlot(false, false, false, plotFinalIR, false, plotDbCutOff, plotLimitAroundSensor);
                 end
-                toc
             end
     
             if calculatefinalSignals && measurement.isImpulseResponsesSet()      
