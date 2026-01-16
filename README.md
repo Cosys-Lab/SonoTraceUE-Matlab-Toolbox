@@ -296,7 +296,7 @@ success = interface.setNewSensorOwnerWorldTransform(tform, teleport)
 Updates the positions of specific emitters.
 
 ```matlab
-success = interface.setNewEmitterPositions(emitterIndexes, NewEmitterPositions, relativeTransform, reApplyOffset) 
+success = interface.setNewEmitterPositions(emitterIndexes, newEmitterPositions, relativeTransform, reApplyOffset) 
 ```
 
 **Parameters:**
@@ -313,7 +313,7 @@ success = interface.setNewEmitterPositions(emitterIndexes, NewEmitterPositions, 
 Updates the positions of specific receivers.
 
 ```matlab
-success = interface.setNewReceiverPositions(receiverIndexes, NewReceiverPositions, relativeTransform, reApplyOffset) 
+success = interface.setNewReceiverPositions(receiverIndexes, newReceiverPositions, relativeTransform, reApplyOffset) 
 ```
 
 **Parameters:**

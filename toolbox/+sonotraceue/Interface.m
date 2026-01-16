@@ -287,11 +287,11 @@ classdef Interface
             end
         end
 
-        function success = setNewEmitterPositions(obj, emitterIndexes, NewEmitterPositions, relativeTransform, reApplyOffset)
+        function success = setNewEmitterPositions(obj, emitterIndexes, newEmitterPositions, relativeTransform, reApplyOffset)
             
             receiverCount = size(emitterIndexes, 2);
 
-            if ~isequal(size(NewEmitterPositions), [3, receiverCount])
+            if ~isequal(size(newEmitterPositions), [3, receiverCount])
                 obj.log.error("Invalid new emitter positions matrix. Provide a 3xN matrix with N the amount of emitters matching the emitter indexes array size.");
                 success = false;
                 return;
@@ -305,7 +305,7 @@ classdef Interface
                     commandString = sprintf('%s_%i', commandString, emitterIndexes(i));
                 end
                 for i = 1:receiverCount                        
-                    commandString = sprintf('%s_%.6f_%.6f_%.6f', commandString, NewEmitterPositions(1, i) * 100, -NewEmitterPositions(2, i) * 100, NewEmitterPositions(3, i) * 100);
+                    commandString = sprintf('%s_%.6f_%.6f_%.6f', commandString, newEmitterPositions(1, i) * 100, -newEmitterPositions(2, i) * 100, newEmitterPositions(3, i) * 100);
                 end
                 writeline(obj.server, commandString);
     
@@ -323,11 +323,11 @@ classdef Interface
             end
         end
 
-        function success = setNewReceiverPositions(obj, receiverIndexes, NewReceiverPositions, relativeTransform, reApplyOffset)
+        function success = setNewReceiverPositions(obj, receiverIndexes, newReceiverPositions, relativeTransform, reApplyOffset)
             
             receiverCount = size(receiverIndexes, 2);
 
-            if ~isequal(size(NewReceiverPositions), [3, receiverCount])
+            if ~isequal(size(newReceiverPositions), [3, receiverCount])
                 obj.log.error("Invalid new receiver positions matrix. Provide a 3xN matrix with N the amount of receivers matching the receiver indexes array size.");
                 success = false;
                 return;
@@ -341,7 +341,7 @@ classdef Interface
                     commandString = sprintf('%s_%i', commandString, receiverIndexes(i));
                 end
                 for i = 1:receiverCount                        
-                    commandString = sprintf('%s_%.6f_%.6f_%.6f', commandString, NewReceiverPositions(1, i) * 100, -NewReceiverPositions(2, i) * 100, NewReceiverPositions(3, i) * 100);
+                    commandString = sprintf('%s_%.6f_%.6f_%.6f', commandString, newReceiverPositions(1, i) * 100, -newReceiverPositions(2, i) * 100, newReceiverPositions(3, i) * 100);
                 end
                 writeline(obj.server, commandString);
     
