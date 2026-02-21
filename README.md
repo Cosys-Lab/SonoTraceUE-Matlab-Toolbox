@@ -3,7 +3,7 @@
 
 # SonoTraceUE Matlab Toolbox
 
-Matlab Toolbox servering as an interface client to interact with the Unreal Engine implementation of [SonoTraceUE](https://github.com/Cosys-Lab/SonoTraceUE).
+Matlab Toolbox serving as an interface client to interact with the Unreal Engine implementation of [SonoTraceUE](https://github.com/Cosys-Lab/SonoTraceUE).
 
 <a id="H_4dd9"></a>
 
@@ -14,7 +14,7 @@ Find the latest [release on Github](https://github.com/Cosys-Lab/SonoTraceUE-Mat
 <a id="TMP_3c79"></a>
 
 ## Dependencies
--  Unreal Engine with [SonoTraceUE Plugin](https://github.com/Cosys-Lab/SonoTraceUE) v2.0.0 
+-  Unreal Engine with [SonoTraceUE Plugin](https://github.com/Cosys-Lab/SonoTraceUE) v3.1.0 
 -  Instrument Control Toolbox 
 -  Phased Array System Toolbox 
 -  Signal Processing Toolbox 
