@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Released]
 
+## [3.0.0] - 2026-02-24
+- Compatible with SonoTraceUE v3.1.0.
+- Added publication link. 
+
 ## [2.0.2] - 2026-01-16
 - Compatible with SonoTraceUE v2.0.0.
 - Fixed documentation and example errors.
