@@ -6,7 +6,8 @@
 Matlab Toolbox serving as an interface client to interact with the Unreal Engine implementation of [SonoTraceUE](https://github.com/Cosys-Lab/SonoTraceUE).
 
 -  Demonstration video: [https://www.youtube.com/watch?v=\_Z39IlmT22E](https://www.youtube.com/watch?v=_Z39IlmT22E) 
--  Paper Preprint: [https://arxiv.org/abs/2602.19652](https://arxiv.org/abs/2602.19652) 
+-  Open\-access journal paper:[ https://ieeexplore.ieee.org/document/11762357](https://ieeexplore.ieee.org/document/11762357) 
+-  Preprint paper: [https://arxiv.org/abs/2602.19652](https://arxiv.org/abs/2602.19652) 
 <a id="TMP_1982"></a>
 
 ## Publication
@@ -14,12 +15,12 @@ Matlab Toolbox serving as an interface client to interact with the Unreal Engine
 We kindly ask to cite our paper if you find this repository useful:
 
 ```
-@article{jansen2026sonotraceue,
-title={Hardware-Accelerated Geometrical Simulation of Biological and Engineered In-Air Ultrasonic Systems}, 
+@ARTICLE{11762357,
 author={Jansen, Wouter and Steckel, Jan},
+journal={IEEE Open Journal of Ultrasonics, Ferroelectrics, and Frequency Control}, 
+title={Hardware-Accelerated Geometrical Simulation of Biological and Engineered In-Air Ultrasonic Systems}, 
 year={2026},
-url={https://arxiv.org/abs/2602.19652},
-doi={10.48550/arXiv.2602.19652},
+doi={10.1109/OJUFFC.2026.3748392}
 }
 ```
 <a id="H_4dd9"></a>
