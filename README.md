@@ -12,7 +12,7 @@ Matlab Toolbox serving as an interface client to interact with the Unreal Engine
 
 ## Publication
 
-We kindly ask to cite our [open-access paper](https://ieeexplore.ieee.org/document/11762357) if you find this repository useful:
+We kindly ask to cite our paper if you find this repository useful:
 
 ```
 @ARTICLE{11762357,
