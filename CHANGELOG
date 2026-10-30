@@ -3,9 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Released]
 
-## [4.1.0] - 2026-10-26
+## [4.1.0.0] - 2026-10-26
 - Added journal publication link. 
 - Compatible with SonoTraceUE v3.1.0 or higher.
+- Added 4th version number for clients only. 
 
 ## [3.0.0] - 2026-02-24
 - Compatible with SonoTraceUE v3.1.0.
